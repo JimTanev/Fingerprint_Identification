@@ -7,7 +7,7 @@ def execute(file_path):
     size = np.size(img)
     skel = np.zeros(img.shape, np.uint8)
 
-    ret, img = cv2.threshold(img, 127, 255, 0)
+    ret, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     element = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
     done = False
 
