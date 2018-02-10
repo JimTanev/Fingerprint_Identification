@@ -1,17 +1,21 @@
 import cv2
-import skeletonization as skel
+import numpy as np
 
 
 def main():
 
-    img_skeleton = skel.execute('fingerprints/101_1.tif')
+    file_path = 'fingerprints/101_1.tif'
+    img = cv2.imread(file_path)
+    img_skeleton = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # find harris corners
-    dst = cv2.cornerHarris(img_skeleton, 2, 3, 0.04)
-    ret, dst = cv2.threshold(dst, 0.01 * dst.max(), 255, 0)
+    corners = cv2.goodFeaturesToTrack(img_skeleton, 100, 0.01, 10)
+    corners = np.int0(corners)
 
-    cv2.imshow("skel", img_skeleton)
-    cv2.imshow("dst", dst)
+    for i in corners:
+        x, y = i.ravel()
+        cv2.circle(img, (x, y), 3, 255, -1)
+
+    cv2.imshow("skel", img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
