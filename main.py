@@ -4,20 +4,31 @@ import numpy as np
 
 def main():
 
-    file_path = 'fingerprints/101_1.tif'
-    img = cv2.imread(file_path)
-    img_skeleton = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img1 = cv2.imread('fingerprints/101_1.tif', 0)  # queryImage
+    img2 = cv2.imread('fingerprints/pic1.png', 0)  # trainImage
 
-    corners = cv2.goodFeaturesToTrack(img_skeleton, 100, 0.01, 10)
-    corners = np.int0(corners)
+    # Initiate ORB detector
+    orb = cv2.ORB_create()
 
-    for i in corners:
-        x, y = i.ravel()
-        cv2.circle(img, (x, y), 3, 255, -1)
+    # find the keypoints and descriptors with ORB
+    kp1, des1 = orb.detectAndCompute(img1, None)
+    kp2, des2 = orb.detectAndCompute(img2, None)
 
-    cv2.imshow("skel", img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # FLANN parameters
+    FLANN_INDEX_LSH = 0    # 6
+    index_params = dict(algorithm=FLANN_INDEX_LSH, table_number=6, key_size=12, multi_probe_level=1)
+    search_params = dict(checks=100)  # or pass empty dictionary
+
+    flann = cv2.FlannBasedMatcher(index_params, search_params)
+
+    matches = flann.knnMatch(np.asarray(des1, np.float32), np.asarray(des2, np.float32), 2)
+
+    count_matches = 0
+    for m, n in matches:
+        if m.distance < 0.75 * n.distance:
+            count_matches += 1
+
+    print("The two pictures are matched:", count_matches/5, "%")
 
 
 if __name__ == '__main__':
