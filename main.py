@@ -1,14 +1,20 @@
-import matcher_images as mi
-import glob
+import fingerprint
+import gui
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
 
 
 def main():
-    mypath = 'DB1/*'
-    file_names = glob.glob(mypath)
-    for file_name in file_names:
-        match = mi.compare_two_images('fingerprints/101_8.tif', file_name)
-        if match > 90.0:
-            print(file_name)
+    # file_name = fmatcher.get_ID('fingerprints/one_more.tif')
+    # print(file_name)
+
+    win = gui.MainWindow()
+    win.connect("delete-event", Gtk.main_quit)
+    win.show_all()
+    Gtk.main()
+
 
 if __name__ == '__main__':
     main()
