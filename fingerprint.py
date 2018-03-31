@@ -9,8 +9,7 @@ class Fingerprint:
     __file_name = None
 
     def __init__(self, file_name):
-        self.__file_name = file_name
-        self.__id, _ = path.basename(file_name).split('.')
+        self.set_file_name(file_name)
 
     def get_id(self):
         return self.__id
@@ -31,11 +30,8 @@ def construct_fingerprint(image):
         match = __compare_two_images(image, db_image)
         if match > 95.0:
             file_names.append(db_image)
-    # len_file_names = len(file_names)
-    # if len_file_names > 1:
-    #     return 'Too many.'
-    # elif len_file_names < 1:
-    #     return 'Not Found.'
+    if len(file_names) < 1:
+        return None
     return Fingerprint(file_names[0])
 
 

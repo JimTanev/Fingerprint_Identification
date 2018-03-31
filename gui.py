@@ -4,6 +4,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
+
 class MainWindow(Gtk.Window):
     __fingerprint = None
 
@@ -99,15 +100,17 @@ class FingerprintSelectionDialog(Gtk.Dialog):
 
         response = file_dialog.run()
         if response == Gtk.ResponseType.OK:
-            edit_dialog = AddDialog(self, file_dialog.get_filename())
-            file_dialog.destroy()
-            response_edit = edit_dialog.run()
-            edit_dialog.destroy()
-            # if response_edit is -1:
-            #     exit(0)
+            file_name = file_dialog.get_filename()
+            if fingerprint.construct_fingerprint(file_name) is None:
+                add_dialog = AddDialog(self, file_name)
+                file_dialog.destroy()
+                add_dialog.run()
+                add_dialog.destroy()
 
-            self.__fingerprint = edit_dialog.get_fingerprint()
-            self.destroy()
+                self.__fingerprint = add_dialog.get_fingerprint()
+                self.destroy()
+            else:
+                file_dialog.destroy()
         elif response == Gtk.ResponseType.CANCEL:
             file_dialog.destroy()
 
@@ -152,10 +155,8 @@ class AddDialog(Gtk.Dialog):
 
     def on_add_clicked(self, widget):
         fingerprint_file = 'DB1/' + self.__entry.get_text() + '.tif'
-        print(self.__file_name)
         os.rename(self.__file_name, fingerprint_file)
-        self.__fingerprint = fingerprint.construct_fingerprint(fingerprint_file)
-        print('add button clicked')
+        self.__fingerprint = fingerprint.Fingerprint(fingerprint_file)
         self.destroy()
 
     def on_cancel_clicked(self, widget):
@@ -199,11 +200,9 @@ class EditDialog(Gtk.Dialog):
         updated_relative_file_name = 'DB1/' + self.__entry.get_text() + '.tif'
         os.rename(self.__fingerprint.get_file_name(), updated_relative_file_name)
         self.__fingerprint.set_file_name(updated_relative_file_name)
-        print('update button clicked')
 
     def on_delete_clicked(self, widget):
         os.remove(self.__fingerprint.get_file_name())
-        print('delete button clicked')
         exit(0)
 
     def on_cancel_clicked(self, widget):
