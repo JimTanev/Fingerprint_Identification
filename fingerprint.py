@@ -25,7 +25,6 @@ class Fingerprint:
 
 def construct_fingerprint(image):
     db_images = glob.glob(const.DB_PATH + '*')
-    print(db_images)
     file_names = []
     for db_image in db_images:
         match = __compare_two_images(image, db_image)

@@ -1,4 +1,5 @@
 import fingerprint
+import const
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -12,8 +13,10 @@ class SelectionDialog(Gtk.Dialog):
     def get_fingerprint(self):
         return self.__fingerprint
 
-    def __init__(self, parent):
-        Gtk.Dialog.__init__(self, "Fingerprint selection", parent, 0)
+    def __init__(self, parent, tts):
+        Gtk.Dialog.__init__(self, "Избор на пръстов отпечатък", parent, 0)
+
+        self.tts = tts
 
         self.set_default_size(600, 400)
         self.set_border_width(10)
@@ -21,22 +24,25 @@ class SelectionDialog(Gtk.Dialog):
         box = self.get_content_area()
         box.props.orientation = Gtk.Orientation.VERTICAL
 
-        button_choose = Gtk.Button("Select Fingerprint", expand=True)
-        button_choose.connect("clicked", self.on_select_clicked)
-        box.add(button_choose)
+        button_select = Gtk.Button("Изберете пръстов отпечатък", expand=True)
+        button_select.connect("clicked", self.on_select_clicked)
+        self.tts.add_speak_hover(button_select, "Изберете пръстов отпечатък")
+        box.add(button_select)
 
-        button_add = Gtk.Button("Add Fingerprint", expand=True)
+        button_add = Gtk.Button("Добавете пръстов отпечатък", expand=True)
         button_add.connect("clicked", self.on_add_clicked)
+        self.tts.add_speak_hover(button_add, "Добавете пръстов отпечатък")
         box.add(button_add)
 
-        exit_button = Gtk.Button("Exit", hexpand=True)
-        exit_button.connect("clicked", lambda widget: exit(0))
-        box.add(exit_button)
+        button_exit = Gtk.Button("Изход", hexpand=True)
+        button_exit.connect("clicked", lambda widget: exit(0))
+        self.tts.add_speak_hover(button_exit, "Изход")
+        box.add(button_exit)
 
         self.show_all()
 
     def on_select_clicked(self, widget):
-        file_dialog = Gtk.FileChooserDialog("Please select a tif file", self,
+        file_dialog = Gtk.FileChooserDialog("Моля изберете tif файл", self,
                                             Gtk.FileChooserAction.OPEN,
                                             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
                                              Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
@@ -52,7 +58,7 @@ class SelectionDialog(Gtk.Dialog):
             file_dialog.destroy()
 
     def on_add_clicked(self, widget):
-        file_dialog = Gtk.FileChooserDialog("Please select a tif file", self,
+        file_dialog = Gtk.FileChooserDialog("Моля изберете tif файл", self,
                                             Gtk.FileChooserAction.OPEN,
                                             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
                                              Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
@@ -62,7 +68,7 @@ class SelectionDialog(Gtk.Dialog):
         if response == Gtk.ResponseType.OK:
             file_name = file_dialog.get_filename()
             if fingerprint.construct_fingerprint(file_name) is None:
-                add_dialog = AddDialog(self, file_name)
+                add_dialog = AddDialog(self, file_name, self.tts)
                 file_dialog.destroy()
                 add_dialog.run()
                 add_dialog.destroy()
@@ -77,7 +83,7 @@ class SelectionDialog(Gtk.Dialog):
     @staticmethod
     def add_filters(dialog):
         filter_fingerprint = Gtk.FileFilter()
-        filter_fingerprint.set_name("Fingerprints")
+        filter_fingerprint.set_name("image/tif")
         filter_fingerprint.add_mime_type("image/tif")
-        filter_fingerprint.add_pattern("*.tif")
+        filter_fingerprint.add_pattern("*" + const.FILE_EXTENSION)
         dialog.add_filter(filter_fingerprint)
