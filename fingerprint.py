@@ -1,10 +1,8 @@
-import glob
-from os import path
-
 import cv2
 import numpy as np
-
 import const
+import glob
+from os import path
 
 
 class Fingerprint:

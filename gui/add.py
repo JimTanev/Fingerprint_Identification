@@ -1,9 +1,7 @@
-import shutil
-
-import gi
-
 import const
 import fingerprint
+import shutil
+import gi
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
