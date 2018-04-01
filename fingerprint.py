@@ -1,7 +1,10 @@
-import cv2
-import numpy as np
 import glob
 from os import path
+
+import cv2
+import numpy as np
+
+import const
 
 
 class Fingerprint:
@@ -23,8 +26,8 @@ class Fingerprint:
 
 
 def construct_fingerprint(image):
-    db_path = 'DB1/*'
-    db_images = glob.glob(db_path)
+    db_images = glob.glob(const.DB_PATH + '*')
+    print(db_images)
     file_names = []
     for db_image in db_images:
         match = __compare_two_images(image, db_image)

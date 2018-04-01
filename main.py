@@ -1,13 +1,11 @@
-import gui
-
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+from gui.main import MainWindow
 
 
 def main():
-
-    win = gui.MainWindow()
+    win = MainWindow()
     win.connect("delete-event", Gtk.main_quit)
     win.show_all()
     Gtk.main()
