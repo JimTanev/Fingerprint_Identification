@@ -20,7 +20,7 @@ class MainWindow(Gtk.Window):
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         self.add(vbox)
 
-        self.link_button = Gtk.LinkButton("http://localhost:8080/finger/" + self.__fingerprint.get_id(),
+        self.link_button = Gtk.LinkButton("http://localhost:8000/" + self.__fingerprint.get_id(),
                                           "Посетете localhost", expand=True)
         self.tts.add_speak_hover(self.link_button, "Посетете localhost")
         vbox.add(self.link_button)
@@ -51,4 +51,4 @@ class MainWindow(Gtk.Window):
         edit_dialog.run()
         edit_dialog.destroy()
         self.__fingerprint = edit_dialog.get_fingerprint()
-        self.link_button.set_uri("http://localhost:8080/finger/" + self.__fingerprint.get_id())
+        self.link_button.set_uri("http://localhost:8000/" + self.__fingerprint.get_id())
