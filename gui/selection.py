@@ -4,7 +4,7 @@ import gi
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
-from gui.add import AddDialog
+from .add import AddDialog
 
 
 class SelectionDialog(Gtk.Dialog):
@@ -13,36 +13,58 @@ class SelectionDialog(Gtk.Dialog):
     def get_fingerprint(self):
         return self.__fingerprint
 
-    def __init__(self, parent, tts):
-        Gtk.Dialog.__init__(self, "Избор на пръстов отпечатък", parent, 0)
+    def __init__(self, parent, language_properties):
+        self.tts = language_properties.tts
+        self.language_properties = language_properties
 
-        self.tts = tts
-
+        Gtk.Dialog.__init__(self, 'Choose fingerprint', parent, 0)
         self.set_default_size(600, 400)
         self.set_border_width(10)
+        self.messages = language_properties.messages
 
-        box = self.get_content_area()
-        box.props.orientation = Gtk.Orientation.VERTICAL
-
-        button_select = Gtk.Button("Изберете пръстов отпечатък", expand=True)
-        button_select.connect("clicked", self.on_select_clicked)
-        self.tts.add_speak_hover(button_select, "Изберете пръстов отпечатък")
-        box.add(button_select)
-
-        button_add = Gtk.Button("Добавете пръстов отпечатък", expand=True)
-        button_add.connect("clicked", self.on_add_clicked)
-        self.tts.add_speak_hover(button_add, "Добавете пръстов отпечатък")
-        box.add(button_add)
-
-        button_exit = Gtk.Button("Изход", hexpand=True)
-        button_exit.connect("clicked", lambda widget: exit(0))
-        self.tts.add_speak_hover(button_exit, "Изход")
-        box.add(button_exit)
+        self.content_area = self.get_content_area()
+        self.box = self.__create_box()
+        self.content_area.add(self.box)
 
         self.show_all()
 
+    def __create_box(self):
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        box.props.orientation = Gtk.Orientation.VERTICAL
+
+        button_change_language = Gtk.Button(self.messages.selection.button_change_language_title, expand=True)
+        button_change_language.connect('clicked', self.on_change_language_clicked)
+        self.tts.add_speak_hover(button_change_language, self.messages.selection.button_change_language_title)
+        box.add(button_change_language)
+
+        button_select = Gtk.Button(self.messages.selection.button_select_title, expand=True)
+        button_select.connect('clicked', self.on_select_clicked)
+        self.tts.add_speak_hover(button_select, self.messages.selection.button_select_title)
+        box.add(button_select)
+
+        button_add = Gtk.Button(self.messages.selection.button_add_title, expand=True)
+        button_add.connect('clicked', self.on_add_clicked)
+        self.tts.add_speak_hover(button_add, self.messages.selection.button_add_title)
+        box.add(button_add)
+
+        button_exit = Gtk.Button(self.messages.selection.button_exit_title, hexpand=True)
+        button_exit.connect('clicked', lambda widget: exit(0))
+        self.tts.add_speak_hover(button_exit, self.messages.selection.button_exit_title)
+        box.add(button_exit)
+
+        return box
+
+    def on_change_language_clicked(self, widget):
+        self.content_area.remove(self.box)
+        self.language_properties.change_language()
+        self.tts = self.language_properties.tts
+        self.messages = self.language_properties.messages
+        self.box = self.__create_box()
+        self.content_area.add(self.box)
+        self.show_all()
+
     def on_select_clicked(self, widget):
-        file_dialog = Gtk.FileChooserDialog("Моля изберете tif файл", self,
+        file_dialog = Gtk.FileChooserDialog(self.messages.selection.file_dialog_title, self,
                                             Gtk.FileChooserAction.OPEN,
                                             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
                                              Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
@@ -53,12 +75,15 @@ class SelectionDialog(Gtk.Dialog):
         if response == Gtk.ResponseType.OK:
             self.__fingerprint = fingerprint.construct_fingerprint(file_dialog.get_filename())
             file_dialog.destroy()
-            self.destroy()
+            if self.__fingerprint is None:
+                self.tts.speak(self.messages.selection.tts_fingerprint_not_found)
+            else:
+                self.destroy()
         elif response == Gtk.ResponseType.CANCEL:
             file_dialog.destroy()
 
     def on_add_clicked(self, widget):
-        file_dialog = Gtk.FileChooserDialog("Моля изберете tif файл", self,
+        file_dialog = Gtk.FileChooserDialog(self.messages.selection.file_dialog_title, self,
                                             Gtk.FileChooserAction.OPEN,
                                             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
                                              Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
@@ -68,7 +93,7 @@ class SelectionDialog(Gtk.Dialog):
         if response == Gtk.ResponseType.OK:
             file_name = file_dialog.get_filename()
             if fingerprint.construct_fingerprint(file_name) is None:
-                add_dialog = AddDialog(self, file_name, self.tts)
+                add_dialog = AddDialog(self, file_name, self.language_properties)
                 file_dialog.destroy()
                 add_dialog.run()
                 add_dialog.destroy()
@@ -77,13 +102,14 @@ class SelectionDialog(Gtk.Dialog):
                 self.destroy()
             else:
                 file_dialog.destroy()
+                self.tts.speak(self.messages.selection.tts_fingerprint_exist_in_database)
         elif response == Gtk.ResponseType.CANCEL:
             file_dialog.destroy()
 
     @staticmethod
     def add_filters(dialog):
         filter_fingerprint = Gtk.FileFilter()
-        filter_fingerprint.set_name("image/tif")
-        filter_fingerprint.add_mime_type("image/tif")
-        filter_fingerprint.add_pattern("*" + const.FILE_EXTENSION)
+        filter_fingerprint.set_name('image/tif')
+        filter_fingerprint.add_mime_type('image/tif')
+        filter_fingerprint.add_pattern('*' + const.FILE_EXTENSION)
         dialog.add_filter(filter_fingerprint)
