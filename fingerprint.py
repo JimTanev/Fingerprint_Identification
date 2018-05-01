@@ -52,7 +52,9 @@ def __compare_two_images(query_image, train_image):
     flann = cv2.FlannBasedMatcher(index_params, {})
     matches = flann.knnMatch(des1, des2, 2)
     count_matches = 0
-    for m, n in matches:
-        if m.distance < 0.75 * n.distance:
-            count_matches += 1
+    for match in matches:
+        if match is not None and len(match) is 2:
+            m, n = match
+            if m.distance < 0.75 * n.distance:
+                count_matches += 1
     return count_matches / 5
