@@ -40,10 +40,10 @@ class MainWindow(Gtk.Window):
         vbox.add(button_exit)
 
     def executing_selection_dialog(self):
-        dialog = SelectionDialog(self, self.language_properties)
-        dialog.run()
-        dialog.destroy()
-        self.__fingerprint = dialog.get_fingerprint()
+        selection_dialog = SelectionDialog(self, self.language_properties)
+        selection_dialog.run()
+        selection_dialog.destroy()
+        self.__fingerprint = selection_dialog.get_fingerprint()
         if self.__fingerprint is not None:
             self.language_properties.tts.spell(self.__fingerprint.get_id())
         else:

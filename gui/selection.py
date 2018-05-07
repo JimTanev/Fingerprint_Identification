@@ -74,13 +74,11 @@ class SelectionDialog(Gtk.Dialog):
         response = file_dialog.run()
         if response == Gtk.ResponseType.OK:
             self.__fingerprint = fingerprint.construct_fingerprint(file_dialog.get_filename())
-            file_dialog.destroy()
             if self.__fingerprint is None:
                 self.tts.speak(self.messages.selection.tts_fingerprint_not_found)
             else:
                 self.destroy()
-        elif response == Gtk.ResponseType.CANCEL:
-            file_dialog.destroy()
+        file_dialog.destroy()
 
     def on_add_clicked(self, widget):
         file_dialog = Gtk.FileChooserDialog(self.messages.selection.file_dialog_title, self,
@@ -94,17 +92,14 @@ class SelectionDialog(Gtk.Dialog):
             file_name = file_dialog.get_filename()
             if fingerprint.construct_fingerprint(file_name) is None:
                 add_dialog = AddDialog(self, file_name, self.language_properties)
-                file_dialog.destroy()
                 add_dialog.run()
                 add_dialog.destroy()
 
                 self.__fingerprint = add_dialog.get_fingerprint()
                 self.destroy()
             else:
-                file_dialog.destroy()
                 self.tts.speak(self.messages.selection.tts_fingerprint_exist_in_database)
-        elif response == Gtk.ResponseType.CANCEL:
-            file_dialog.destroy()
+        file_dialog.destroy()
 
     @staticmethod
     def add_filters(dialog):
