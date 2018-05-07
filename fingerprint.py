@@ -27,7 +27,7 @@ def construct_fingerprint(image):
     file_names = []
     for db_image in db_images:
         match = __compare_two_images(image, db_image)
-        if match > 95.0:
+        if match > 50.0:
             file_names.append(db_image)
     if len(file_names) < 1:
         return None
