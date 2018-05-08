@@ -20,7 +20,7 @@ class AddDialog(Gtk.Dialog):
         Gtk.Dialog.__init__(self, 'Add new fingerprint', parent, 0)
         self.set_default_size(600, 400)
         self.set_border_width(10)
-        self.tts = self.language_properties.tts
+        self.tts = language_properties.tts
         self.messages = language_properties.messages
 
         box = self.get_content_area()
