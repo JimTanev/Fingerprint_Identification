@@ -73,7 +73,7 @@ class SelectionDialog(Gtk.Dialog):
 
         response = file_dialog.run()
         if response == Gtk.ResponseType.OK:
-            self.__fingerprint = fingerprint.construct_fingerprint(file_dialog.get_filename())
+            self.__fingerprint = self.__check_fingerprint_in_db(file_dialog.get_filename())
             if self.__fingerprint is None:
                 self.tts.speak(self.messages.selection.tts_fingerprint_not_found)
             else:
@@ -90,7 +90,7 @@ class SelectionDialog(Gtk.Dialog):
         response = file_dialog.run()
         if response == Gtk.ResponseType.OK:
             file_name = file_dialog.get_filename()
-            if fingerprint.construct_fingerprint(file_name) is None:
+            if self.__check_fingerprint_in_db(file_name) is None:
                 add_dialog = AddDialog(self, file_name, self.language_properties)
                 add_dialog.run()
                 add_dialog.destroy()
@@ -100,6 +100,14 @@ class SelectionDialog(Gtk.Dialog):
             else:
                 self.tts.speak(self.messages.selection.tts_fingerprint_exist_in_database)
         file_dialog.destroy()
+
+    def __check_fingerprint_in_db(self, file_name):
+        result = fingerprint.construct_fingerprint(file_name)
+        if result == 'More':
+            self.tts.speak(self.messages.selection.tts_more_than_one_fingerprint)
+            exit(0)
+        else:
+            return result
 
     @staticmethod
     def add_filters(dialog):

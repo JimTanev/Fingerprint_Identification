@@ -26,6 +26,7 @@ class Selection:
         self.file_dialog_title = 'Please choose tif file'
         self.tts_fingerprint_not_found = 'The fingerprint is not found'
         self.tts_fingerprint_exist_in_database = 'Fingerprint exist in database'
+        self.tts_more_than_one_fingerprint = 'There is more than one fingerprint found in database'
 
 
 class Add:

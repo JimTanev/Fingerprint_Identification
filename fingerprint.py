@@ -29,8 +29,11 @@ def construct_fingerprint(image):
         match = __compare_two_images(image, db_image)
         if match > 50.0:
             file_names.append(db_image)
-    if len(file_names) < 1:
+    count_matches = len(file_names)
+    if count_matches < 1:
         return None
+    elif count_matches > 1:
+        return 'More'
     return Fingerprint(file_names[0])
 
 
@@ -58,3 +61,8 @@ def __compare_two_images(query_image, train_image):
             if m.distance < 0.75 * n.distance:
                 count_matches += 1
     return count_matches / 5
+
+
+class MoreThanOneError(Exception):
+    def __init__(self, message):
+        self.message = message

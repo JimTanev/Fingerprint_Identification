@@ -26,6 +26,7 @@ class Selection:
         self.file_dialog_title = 'Моля изберете tif файл'
         self.tts_fingerprint_not_found = 'Пръстовият отпечатък не е намерен'
         self.tts_fingerprint_exist_in_database = 'Пръстовият отпечатък съществува в базата нанни'
+        self.tts_more_than_one_fingerprint = 'Има повече от един пръстов отпечатък намерен в базата данни'
 
 
 class Add:
