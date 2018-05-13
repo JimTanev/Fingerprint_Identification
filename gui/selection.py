@@ -103,7 +103,7 @@ class SelectionDialog(Gtk.Dialog):
 
     def __check_fingerprint_in_db(self, file_name):
         result = fingerprint.construct_fingerprint(file_name)
-        if result == 'More':
+        if result == const.MULTIPLE:
             self.tts.speak(self.messages.selection.tts_more_than_one_fingerprint)
             exit(0)
         else:

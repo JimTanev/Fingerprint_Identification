@@ -33,7 +33,7 @@ def construct_fingerprint(image):
     if count_matches < 1:
         return None
     elif count_matches > 1:
-        return 'More'
+        return const.MULTIPLE
     return Fingerprint(file_names[0])
 
 
