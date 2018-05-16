@@ -48,5 +48,4 @@ class AddDialog(Gtk.Dialog):
         shutil.copy2(self.__file_name, fingerprint_file)
         self.__fingerprint = fingerprint.Fingerprint(fingerprint_file)
         self.tts.speak(self.messages.add.tts_add_new_fingerprint)
-        self.tts.spell(entry_text)
         self.destroy()
