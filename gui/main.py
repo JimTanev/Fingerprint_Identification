@@ -55,4 +55,5 @@ class MainWindow(Gtk.Window):
         edit_dialog.run()
         edit_dialog.destroy()
         self.__fingerprint = edit_dialog.get_fingerprint()
+        self.link_button_uri = 'http://localhost:8000/' + self.__fingerprint.get_id()
         self.link_button.set_uri(self.link_button_uri)
